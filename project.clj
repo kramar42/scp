@@ -20,6 +20,8 @@
                                   [cider/piggieback "0.4.1"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}}
 
+  :figwheel {:css-dirs ["resources/public/css"]}
+
   :cljsbuild {:builds [{:id "dev"
                         :figwheel true
                         :source-paths ["src"]

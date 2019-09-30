@@ -4,15 +4,25 @@ html, body {
     overflow-x: hidden;
 }
 
+.room-wrapper {
+    margin: 40px;
+}
+
 .room {
-    padding-left: 20px;
+    position: relative;
 }
 
 .map {
-
+    display: grid;
+    border-style: solid;
+    border-width: 1px;
 }
 
-pre {
-    white-space: pre-wrap;
-    line-height: 1.1;
+.map-cell {
+    text-align: center;
+}
+
+.player {
+    position: absolute;
+    text-align: center;
 }
