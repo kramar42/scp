@@ -20,9 +20,12 @@ html, body {
 
 .map-cell {
     text-align: center;
+    /*background-color: gray;*/
 }
 
 .player {
     position: absolute;
     text-align: center;
+    /*color: white;*/
+    /*background-color: gray;*/
 }

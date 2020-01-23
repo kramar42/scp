@@ -1,8 +1,10 @@
-(ns ^:figwheel-hooks scp.core
+(ns scp.core
   (:require [reagent.core :as r]
+            [taoensso.timbre :as log]
             [scp.keyboard :as key]
             [scp.map :as map]
-            [scp.util :as util]))
+            [scp.util :as util]
+            ["rot-js" :as rot]))
 
 (defonce db (r/atom {:player {:position [1 1]}
                      :room-map (map/get-map :2)}))
@@ -16,9 +18,9 @@
   [m {[px py] :position}]
   "Should map know about creatures & items on it?"
   (let [height (count m)
-        width (count (first m))]
+        width  (count (first m))]
     [:div.map {:style {:grid-template-columns (css-repeat width)
-                       :width (* width GRID_SIZE)
+                       :width  (* width  GRID_SIZE)
                        :height (* height GRID_SIZE)}}
      ;row
      (for [[i r] (map-indexed vector m)]
@@ -48,14 +50,22 @@
   [:div.room-wrapper
    [room @db]])
 
-(util/runonce
+(defn refresh []
+  (log/info "loaded")
   (r/render [app] (util/root-element))
   (key/shortcuts db))
 
 (comment
   (in-ns 'scp.core)
 
-  (swap! db assoc :player {:position [0 0]})
-  (swap! db assoc :room-map (map/get-map :1))
+  (js/alert "hi")
+
+  (+ 1 1)
+
+  (refresh)
+
+  (swap! db assoc :player {:position [4 3]})
+  (swap! db assoc :room-map (map/get-map :3))
+  (map/get-map :3)
 
   (map/can-stand [1 0] (:room-map @db)))

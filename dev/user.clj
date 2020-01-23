@@ -1,8 +1,16 @@
 (ns user
-  (:use [figwheel-sidecar.repl-api :as ra]))
+  (:require [shadow.cljs.devtools.api :as shadow]))
 
-(defn start [] (ra/start-figwheel!))
+(comment
 
-(defn stop [] (ra/stop-figwheel!))
+  (shadow/repl :main)
 
-(defn cljs [] (ra/cljs-repl "dev"))
+  (+ 1 1)
+
+  (defn start [] (ra/start-figwheel!))
+
+  (defn stop [] (ra/stop-figwheel!))
+
+  (defn cljs [] (ra/cljs-repl "dev"))
+
+  )

@@ -1,4 +1,0 @@
-{
- ;; Change the target directory from the "target" to "resources"
- ;; https://figwheel.org/config-options#target-dir
- :target-dir "resources"}

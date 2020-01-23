@@ -18,9 +18,8 @@
 (defn shortcuts [db]
   (set! (.-onkeydown js/document)
         (fn [e]
-          (let [db-val @db
+          (let [db-val    @db
                 update-fn (update-pos-fn (keymap (.-keyCode e)))
-                new-pos (update-fn (get-in db-val [:player :position]))]
+                new-pos   (update-fn (get-in db-val [:player :position]))]
             (when (map/can-stand new-pos (:room-map db-val))
               (swap! db update-in [:player :position] update-fn))))))
-

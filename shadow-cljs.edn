@@ -1,0 +1,21 @@
+{:deps   {:aliases [:dev]}
+ :nrepl  {:port 9000}
+ :dev-http {8080 "resources/public"}
+ :jvm-opts ["-Xmx2G"]
+ :builds {:main       {:target     :browser
+                       :output-dir "resources/public/js/main"
+                       :asset-path "/js/main"
+
+                       :modules    {:main {:init-fn scp.core/refresh
+                                           :entries [scp.core]}}
+                       :devtools   {:after-load scp.core/refresh}}
+
+          :workspaces {:target     nubank.workspaces.shadow-cljs.target
+                       :ns-regexp  "-(test|ws)$"
+                       :output-dir "resources/public/workspaces/js"
+                       :asset-path "/workspaces/js"
+                       :devtools   {:preloads           [#_com.fulcrologic.fulcro.inspect.preload]
+                                    :http-root          "resources/public/workspaces"
+                                    :http-port          8023
+                                    :http-resource-root "."}}
+          }}
