@@ -8,7 +8,7 @@
            ;bk/ring-gzip                        {:mvn/version "0.3.0"}
            ;ring/ring-core                      {:mvn/version "1.7.1"}
            ;ring/ring-defaults                  {:mvn/version "0.3.2"}
-           com.taoensso/timbre {:mvn/version "4.10.0"}
+           com.taoensso/timbre    {:mvn/version "4.10.0"}
            ;com.fzakaria/slf4j-timbre           {:mvn/version "0.3.15"}
            ;org.slf4j/jcl-over-slf4j            {:mvn/version "1.7.29"}
            ;com.taoensso/tufte                  {:mvn/version "2.1.0-RC4"}
@@ -27,7 +27,8 @@
            ;org.clojure/data.csv           {:mvn/version "0.1.4"}
 
            ;; To simulate Datomic on the back-end
-           datascript          {:mvn/version "0.18.4"}
+           datascript             {:mvn/version "0.18.4"}
+           com.cerner/clara-rules {:mvn/version "0.20.0"}
 
            ;nl.djem/djem-common                 {:mvn/version "0.0.2-SNAPSHOT"
            ;                                     :exclusions  [com.lowagie/itext]}

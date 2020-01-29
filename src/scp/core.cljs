@@ -1,67 +1,27 @@
 (ns scp.core
+  (:require-macros [clara.macros :refer [defrule defquery defsession]])
   (:require [reagent.core :as r]
             [taoensso.timbre :as log]
             [scp.keyboard :as key]
             [scp.map :as map]
             [scp.util :as util]
-            ["rot-js" :as rot]))
+            ["rot-js" :as rot]
+            [clara.rules :as clara]))
 
-(defonce db (r/atom {:player {:position [1 1]}
+(defonce db (r/atom {:player   {:position [1 1]}
+                     :display  (new rot/Display (clj->js {:width 50 :height 50 :forceSquareRatio true}))
                      :room-map (map/get-map :2)}))
 
-(def GRID_SIZE 17)
-
-(defn css-repeat [n & what]
-  (str "repeat(" n "," (or what "1fr") ")"))
-
-(defn render-room-map
-  [m {[px py] :position}]
-  "Should map know about creatures & items on it?"
-  (let [height (count m)
-        width  (count (first m))]
-    [:div.map {:style {:grid-template-columns (css-repeat width)
-                       :width  (* width  GRID_SIZE)
-                       :height (* height GRID_SIZE)}}
-     ;row
-     (for [[i r] (map-indexed vector m)]
-        ;cell
-        (for [[j v] (map-indexed vector r)]
-          ^{:key (str i "x" j)}
-          [:div.map-cell {:style {:height GRID_SIZE}}
-           (if (and (= px j)
-                    (= py i))
-             ""
-             v)]))]))
-
-(defn render-player [{:keys [position]}]
-  (let [[px py] position]
-    [:div.player {:style {:width GRID_SIZE
-                          :height GRID_SIZE
-                          :left (* GRID_SIZE px)
-                          :top (* GRID_SIZE py)}}
-     "@"]))
-
-(defn room [{:keys [room-map player]}]
-  [:div.room
-   [render-room-map room-map player]
-   [render-player player]])
-
-(defn app []
-  [:div.room-wrapper
-   [room @db]])
+(defonce _
+  (.appendChild (util/root-element)
+                (.getContainer (:display @db))))
 
 (defn refresh []
   (log/info "loaded")
-  (r/render [app] (util/root-element))
+  #_(r/render [app] (util/root-element))
   (key/shortcuts db))
 
 (comment
-  (in-ns 'scp.core)
-
-  (js/alert "hi")
-
-  (+ 1 1)
-
   (refresh)
 
   (swap! db assoc :player {:position [4 3]})
@@ -69,3 +29,83 @@
   (map/get-map :3)
 
   (map/can-stand [1 0] (:room-map @db)))
+
+(defn display-option
+  ([name]
+   (-> (:display @db)
+       (.getOptions)
+       (js->clj :keywordize-keys true)
+        name)))
+
+(comment
+
+  (.getOptions (:display @db))
+
+  (display-option :width)
+
+  (.draw (:display @db) 2 2 "" "" "#ccc")
+  (.draw (:display @db) 1 1 "@")
+
+  (def m (-> (new rot/Map.Digger 50 50)
+             (.create (.-DEBUG (:display @db)))
+             #_(js->clj :keywordize-keys true)))
+
+  (def d (.create m))
+
+  (-> d
+      (.getCorridors))
+
+  (rot/SHOW (.getContainer (:display @b)))
+
+  (.create m (.-DEBUG (:display @db)))
+
+  map.create(display.DEBUG);
+
+  (keys m)
+
+  )
+
+
+
+
+(comment
+  display.draw(15, 4, "%", "#0f0");          /* foreground color */
+  display.draw(25, 4, "#", "#f00", "#009");  /* and background color */
+
+  var display = new ROT.Display({width:20, height:5});
+  SHOW(display.getContainer()); /* do not forget to append to page! */
+  )
+
+(defrecord SupportRequest [client level])
+
+(defrecord ClientRepresentative [name client])
+
+(defrule is-important
+         "Find important support requests."
+         [SupportRequest (= :high level)]
+         =>
+         (println "High support requested!"))
+
+(defrule notify-client-rep
+         "Find the client representative and request support."
+         [SupportRequest (= ?client client)]
+         [ClientRepresentative (= ?client client) (= ?name name)]
+         =>
+         (println "Notify" ?name "that"
+                  ?client "has a new support request!"))
+
+(comment
+
+  (defsession session 'scp.core)
+
+  (-> session
+      (clara/insert (->ClientRepresentative "Alice" "Acme")
+                    (->SupportRequest "Acme" :high))
+      (clara/fire-rules))
+  )
+
+(comment
+
+
+
+  )
