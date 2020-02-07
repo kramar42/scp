@@ -27,8 +27,9 @@
            ;org.clojure/data.csv           {:mvn/version "0.1.4"}
 
            ;; To simulate Datomic on the back-end
-           datascript             {:mvn/version "0.18.4"}
+           ;datascript             {:mvn/version "0.18.4"}
            com.cerner/clara-rules {:mvn/version "0.20.0"}
+           aysylu/loom            {:mvn/version "1.0.2"}
 
            ;nl.djem/djem-common                 {:mvn/version "0.0.2-SNAPSHOT"
            ;                                     :exclusions  [com.lowagie/itext]}

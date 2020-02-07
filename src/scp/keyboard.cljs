@@ -1,5 +1,6 @@
 (ns scp.keyboard
-  (:require [scp.map :as map]))
+  (:require
+    [scp.map :as map]))
 
 (def keymap
   {38 :up
@@ -18,8 +19,10 @@
 (defn shortcuts [db]
   (set! (.-onkeydown js/document)
         (fn [e]
-          (let [db-val    @db
-                update-fn (update-pos-fn (keymap (.-keyCode e)))
-                new-pos   (update-fn (get-in db-val [:player :position]))]
-            (when (map/can-stand new-pos (:room-map db-val))
+          (let [{:keys [display map player]} @db
+                update-fn (-> e (.-keyCode) keymap update-pos-fn)
+                new-pos   (-> player :position update-fn)]
+            (when (map/can-stand new-pos map)
+              (map/draw display (:position player) ".")
+              (map/draw display new-pos "@")
               (swap! db update-in [:player :position] update-fn))))))
