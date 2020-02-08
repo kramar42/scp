@@ -1,7 +1,8 @@
 (ns scp.map
   (:require
+    [taoensso.timbre :as log]
     ["rot-js" :as rot]
-    [taoensso.timbre :as log]))
+    [mount.core :refer [defstate]]))
 
 (def levels
   {:1 "
@@ -50,38 +51,40 @@
        (clj->js {:width 50 :height 50
                  :forceSquareRatio false})))
 
-(defn draw
-  ([display [x y] c] (draw display x y c))
-  ([display x y c] (.draw display x y c)))
+(defstate display :start (new-display))
 
-(defn resize [display w h]
-  (.setOptions display (clj->js {:width  w :height h})))
+(defn render [element] (.appendChild element (.getContainer @display)))
+
+(defn draw
+  ([[x y] c] (draw x y c))
+  ([x y c] (.draw @display x y c)))
+
+(defn resize [w h]
+  (.setOptions @display (clj->js {:width  w :height h})))
 
 (defn size [map]
   [(-> map first count) (-> map count)])
 
-(defn draw-level [{:keys [map player items display]}]
-  (.clear display)
+(defn draw-level [{:keys [map player items]}]
+  (.clear @display)
   (let [[w h] (size map)]
-    (resize display w h))
+    (resize w h))
   (doseq [[i r] (map-indexed vector map)]
     (doseq [[j c] (map-indexed vector r)]
-      (draw display j i c)))
-  (draw display (:position player) "@")
+      (draw j i c)))
+  (draw (:position player) "@")
   (doseq [item items]
-    (draw display (:position item) (:symbol item))))
+    (draw (:position item) (:symbol item))))
 
 (comment
-  (draw scp.core/db
-        1 1 "#")
-  (:display @scp.core/db)
+  (draw 1 1 "#")
   (get-map :2)
-  (draw-level @scp.core/db)
+  (draw-level @scp.core/app)
   )
 
 (defn display-option
-  ([display name]
-   (-> display
+  ([name]
+   (-> @display
        (.getOptions)
        (js->clj :keywordize-keys true)
        name)))

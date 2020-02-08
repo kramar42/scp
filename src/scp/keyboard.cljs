@@ -16,13 +16,13 @@
     :right (fn [p] (update p 0 inc))
     identity))
 
-(defn shortcuts [db]
+(defn shortcuts []
   (set! (.-onkeydown js/document)
         (fn [e]
-          (let [{:keys [display map player]} @db
+          (let [{:keys [map player]} @@scp.core/app
                 update-fn (-> e (.-keyCode) keymap update-pos-fn)
                 new-pos   (-> player :position update-fn)]
             (when (map/can-stand new-pos map)
-              (map/draw display (:position player) ".")
-              (map/draw display new-pos "@")
-              (swap! db update-in [:player :position] update-fn))))))
+              (map/draw (:position player) ".")
+              (map/draw new-pos "@")
+              (swap! @scp.core/app update-in [:player :position] update-fn))))))
