@@ -2,7 +2,8 @@
   (:require
     [taoensso.timbre :as log]
     ["rot-js" :as rot]
-    [mount.core :refer [defstate]]))
+    [mount.core :refer [defstate]]
+    [scp.rules :as r]))
 
 (def levels
   {:1 "
@@ -34,6 +35,61 @@
 #.######.#..#.#......#
 #...#.........#......#
 ######################"})
+
+[:greeting :weather :boss :leave]
+(some-fn)
+[
+ {:id          :greeting
+  :phrase      "hello, friend"
+  :visible-if? {}
+  ;; =>
+  :response    {:answer   "hello"
+                :new-fact {}}
+  :choices     [{:ref                :yes
+                 :additional-choices []}
+                {:choices [{:choices [{:choices []}]}]}
+                {:id          :success
+                 :phrase      "you win"
+                 :visible-if? {}}]
+  }
+ {:phrase      "intimidate by boss friendship"
+  :visible-if? {"you know about boss existence"}
+  :condition   {'(r/fears :*collocutor* :boss) {:action [:boss :threaten :bdsm]}
+                cond2 #_-> {:response {:answer "no"}
+                            :choices  []}
+                default    {}}
+  }
+ {:id :yes
+  :phrase "yes"
+  :answer ""
+  :choices [{} {}]}
+ {:phrase "leave"
+  :answer "goodbye"
+  :terminal? true
+  }
+ {:answer "yes"
+  :new-fact {}
+  :choices []}
+ ]
+
+(def all-symbols
+  [{:id :akatosh
+    :is-threat? true}])
+
+(defn trigger-fn
+  [target action symbol]
+  #_=> #_response)
+
+[:boss :threaten :bdsm]
+
+{:threaten (->> all-symbols
+                (filter can-be-threat?)
+                )
+ :ask-about _
+ :give      _}
+
+
+;; static tree
 
 (defn get-map [name]
   (let [map-str (levels name)
