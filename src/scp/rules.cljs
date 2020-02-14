@@ -3,6 +3,7 @@
     [clara.macros :refer [defrule defquery defsession]])
   (:require
     [clara.rules :as clara]
+    [clara.tools.inspect :as inspect]
     [mount.core :refer [defstate]]))
 
 (defrecord Owns [who what])
@@ -19,9 +20,13 @@
   []
   [?who <- CanOpen (= ?who who)])
 
-(defsession sess- 'scp.rules)
+(defquery can-open-door
+  [creature]
+  [?who <- CanOpen (= ?who creature)])
 
-(defstate session :start (atom sess-))
+(defsession session- 'scp.rules)
+
+(defstate session :start (atom session-))
 
 (defn insert [& facts]
   (swap! @session
@@ -44,8 +49,14 @@
 (comment
 
   (insert (->Owns :player :key))
+  (insert (->Owns :player2 :milk))
   (retract (->Owns :player :key))
 
   (query get-who-can-open-doors)
 
+  @session
+  (-> @@session
+      inspect/inspect
+      ;:insertions
+      )
   )

@@ -16,5 +16,6 @@
    :player {:position (rand-pos map)}
    :items  [{:symbol "%"
              :color  "yellow"
+             :id :key
              :position (rand-pos map)}]
    })
