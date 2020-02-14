@@ -3,6 +3,22 @@
             [loom.attr :as attr]
             [loom.io :as io]))
 
+(comment
+  # grammar
+
+  dangeon -> entrance - exit
+  room -> key -(door)- room
+
+
+  # render
+  room
+  key (room + key)
+  entrance (room + <)
+  exit (room + >)
+  corridor
+  corridor w/ door
+  )
+
 (defn init-map
   (-> (graph/graph [:dungeon])
       (attr/add-attr :dungeon :type :dungeon)))
