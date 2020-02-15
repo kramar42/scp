@@ -1,7 +1,6 @@
 (ns scp.keyboard
   (:require
-    [re-frame.core :as rf]
-    [scp.map :as map]))
+    [re-frame.core :as rf]))
 
 (def keymap
   {38 :up

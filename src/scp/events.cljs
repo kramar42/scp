@@ -23,22 +23,23 @@
 (rf/reg-event-fx
   :stand
   (fn [{:keys [db]} [_ who pos]]
-    (log/info who pos (:items db))
-    (let [pickup-items (->> db
-                            :items
-                            (filter (fn [{:keys [position]}]
-                                      (= position pos))))]
-      (log/info pickup-items)
+    (when-let [pickup-items (->> db
+                                 :items
+                                 (filter (fn [{:keys [position]}]
+                                           (= position pos)))
+                                 seq)]
       {:dispatch [:pickup who pickup-items]})))
 
 (rf/reg-event-fx
   :pickup
   (fn [_ [_ who items]]
+    ;; also remove item from the level
     {:dispatch-n
-     (for [item items]
-       (log/spy [:rule r/->Owns [who item]]))}))
+      (vec (for [{:keys [id]} items]
+             (log/spy [:rule r/->Owns [who id]])))}))
 
 (rf/reg-event-fx
   :rule
   (fn [_ [_ rule args]]
-    (r/insert (apply rule args))))
+    (r/insert (apply rule args))
+    nil))

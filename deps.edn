@@ -1,6 +1,6 @@
 {:paths   ["src" "resources"]
  :deps    {com.taoensso/timbre    {:mvn/version "4.10.0"}
-           mount                  {:mvn/version "0.1.12"}
+           mount                  {:mvn/version "0.1.16"}
            com.cerner/clara-rules {:mvn/version "0.20.0"}
            aysylu/loom            {:mvn/version "1.0.2"}
            re-frame               {:mvn/version "0.11.0"}

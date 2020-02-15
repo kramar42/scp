@@ -29,7 +29,7 @@
   (k/shortcuts)
   (render))
 
-(defn ^:dev/after-load clear-cache-and-render! []
+(defn ^:dev/after-load after-load []
   (rf/clear-subscription-cache!)
   (render))
 
