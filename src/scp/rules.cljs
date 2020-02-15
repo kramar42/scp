@@ -21,8 +21,10 @@
   [?who <- CanOpen (= ?who who)])
 
 (defquery can-open-door
-  [creature]
-  [?who <- CanOpen (= ?who creature)])
+  [:?creature]
+  [?who <- CanOpen
+   (= ?who who)
+   (= ?who ?creature)])
 
 (defsession session- 'scp.rules)
 
