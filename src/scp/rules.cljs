@@ -4,7 +4,9 @@
   (:require
     [clara.rules :as clara]
     [clara.tools.inspect :as inspect]
-    [mount.core :refer [defstate]]))
+    [mount.core :refer [defstate]]
+    [scp.views :as v]
+    [taoensso.timbre :as log]))
 
 (defrecord Owns [who what])
 
@@ -14,7 +16,9 @@
   "creature can open door if has key"
   [Owns (= who ?who) (= what :key)]
   =>
-  (clara/insert! (->CanOpen ?who :door)))
+  (let [inf (->CanOpen ?who :door)]
+    (clara/insert! inf)
+    (v/add-event (list inf))))
 
 (defquery get-who-can-open-doors
   []
@@ -34,7 +38,8 @@
   (swap! @session
          #(-> %
               (clara/insert-all facts)
-              (clara/fire-rules))))
+              (clara/fire-rules)))
+  (v/add-event (log/spy facts)))
 
 (defn query [query-fn]
   (clara/query @@session query-fn))
