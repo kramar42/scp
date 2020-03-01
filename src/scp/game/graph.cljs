@@ -1,4 +1,4 @@
-(ns scp.graph
+(ns scp.game.graph
   (:require [loom.graph :as graph]
             [loom.attr :as attr]
             [loom.io :as io]))

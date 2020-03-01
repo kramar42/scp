@@ -1,6 +1,6 @@
-(ns scp.keyboard
+(ns scp.ui.keyboard
   (:require
-    [re-frame.core :as rf]))
+    [re-frame.core :as re]))
 
 (def keymap
   {38 :up
@@ -20,4 +20,4 @@
   (set! (.-onkeydown js/document)
         (fn [e]
           (when-let [update-fn (-> e (.-keyCode) keymap update-pos-fn)]
-            (rf/dispatch [:move :player update-fn])))))
+            (re/dispatch [:map/move :player update-fn])))))

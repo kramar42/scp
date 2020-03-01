@@ -1,52 +1,9 @@
-(ns scp.map
+(ns scp.ui.display
   (:require
-    [taoensso.timbre :as log]
     ["rot-js" :as rot]
     [mount.core :refer [defstate]]
-    [scp.rules :as r]))
+    [scp.game.map :as m]))
 
-(def levels
-  {:1 "
-######################
-#....................#
-#....................#
-#....................#
-#....................#
-#....................#
-#....................#
-######################"
-
-   :2 "
-######################
-#...#.......#.#......#
-#...#######.#........#
-#........#..#.#......#
-#.###....#..#.#......#
-#.######.#..#.#......#
-#.............#......#
-######################"
-
-   :3 "
-######################
-#...#.......#.#......#
-#...###.....#........#
-#...#....#..#.#......#
-#.#.+....#....#......#
-#.######.#..#.#......#
-#...#.........#......#
-######################"})
-
-
-(defn get-map [name]
-  (let [map-str (levels name)
-        map-lines (clojure.string/split-lines map-str)]
-    (map to-array (rest map-lines))))
-
-(defn can-stand [[px py] map]
-  (= "."
-     (aget
-       (nth map py [])
-       px)))
 
 (defn new-display [& params]
   (new rot/Display
@@ -64,12 +21,9 @@
 (defn resize [w h]
   (.setOptions @display (clj->js {:width  w :height h})))
 
-(defn size [map]
-  [(-> map first count) (-> map count)])
-
 (defn draw-level [{:keys [map player items]}]
   (.clear @display)
-  (let [[w h] (size map)]
+  (let [[w h] (m/size map)]
     (resize w h))
   (doseq [[i r] (map-indexed vector map)]
     (doseq [[j c] (map-indexed vector r)]

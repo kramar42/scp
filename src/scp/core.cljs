@@ -1,37 +1,39 @@
 (ns scp.core
   (:require
     [taoensso.timbre :as log]
-    [mount.core :refer [defstate]]
     [reagent.core :as r]
-    [re-frame.core :as rf]
-    [scp.keyboard :as k]
-    [scp.map :as m]
-    [scp.util :as u]
-    [scp.level :as l]
-    [scp.events :as e]
-    [scp.views :as v]))
+    [re-frame.core :as re]
+    [scp.ui.events]
+    [scp.ui.keyboard :as k]
+    [scp.ui.display :as d]
+    [scp.game.dialog :as dl]
+    [scp.game.map :as m]
+    [scp.game.level :as l]
+    [scp.ui.util :as u]
+    [scp.ui.views :as v]))
 
 (enable-console-print!)
 
-(defstate ^{:on-reload :noop} app
-  :start (atom (l/generate (m/get-map :1))))
+(defonce app
+  (l/generate {:map (m/get-map :1)}))
 
 (defn refresh []
-  (rf/dispatch [:init @@app])
+  (re/dispatch-sync [:db/init app])
   (k/shortcuts)
+  #_(v/run-history-chan)
   (log/info "render")
-  (m/draw-level @@app)
+  (d/draw-level app)
   (r/render v/app u/root-element)
-  (m/render (u/element "map")))
+  (d/render (u/element "map")))
 
 (defn ^:dev/after-load after-load []
-  (rf/clear-subscription-cache!)
+  (re/clear-subscription-cache!)
   (refresh))
 
 (defn set-map [map-name]
   (swap! @app assoc :map (m/get-map map-name))
-  (rf/dispatch [:init @@app])
-  (m/draw-level @@app))
+  (re/dispatch [:init @@app])
+  (d/draw-level @@app))
 
 (comment
   (refresh)
@@ -39,4 +41,13 @@
   (m/draw-level @app)
   @app
   @@r/session
+  (re/subscribe [:events/log])
+  (-> (re/subscribe [:dialog])
+      deref
+      dl/choices
+      (nth 2)
+      dl/choices
+      first
+      dl/choices)
+  (re/subscribe [:history])
   )

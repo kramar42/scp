@@ -1,16 +1,18 @@
-(ns scp.rules
+(ns scp.game.rules
   (:require-macros
     [clara.macros :refer [defrule defquery defsession]])
   (:require
+    [taoensso.timbre :as log]
     [clara.rules :as clara]
     [clara.tools.inspect :as inspect]
     [mount.core :refer [defstate]]
-    [scp.views :as v]
-    [taoensso.timbre :as log]))
+    [re-frame.core :as rf]))
 
 (defrecord Owns [who what])
 
 (defrecord CanOpen [who what])
+
+(defrecord Knows [who whom])
 
 (defrule can-open
   "creature can open door if has key"
@@ -18,7 +20,7 @@
   =>
   (let [inf (->CanOpen ?who :door)]
     (clara/insert! inf)
-    (v/add-event (list inf))))
+    (rf/dispatch [:event/insert [inf]])))
 
 (defquery get-who-can-open-doors
   []
@@ -30,7 +32,7 @@
    (= ?who who)
    (= ?who ?creature)])
 
-(defsession session- 'scp.rules)
+(defsession session- 'scp.game.rules)
 
 (defstate session :start (atom session-))
 
@@ -39,7 +41,7 @@
          #(-> %
               (clara/insert-all facts)
               (clara/fire-rules)))
-  (v/add-event (log/spy facts)))
+  (rf/dispatch [:event/insert facts]))
 
 (defn query [query-fn]
   (clara/query @@session query-fn))
