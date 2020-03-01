@@ -12,7 +12,7 @@
 (r/reg-fx
   :facts
   (fn [facts]
-    (rules/insert-all! (log/spy facts))))
+    (rules/insert-all! facts)))
 
 (r/reg-fx
   :draw
