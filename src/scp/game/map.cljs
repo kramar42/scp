@@ -39,11 +39,12 @@
         map-lines (clojure.string/split-lines map-str)]
     (map to-array (rest map-lines))))
 
-(defn can-stand [[px py] map]
-  (= "."
-     (aget
-       (nth map py [])
-       px)))
+(defn get-char [[px py] map]
+  (aget (nth map py [])
+        px))
+
+(defn can-stand [pos map]
+  (= "." (get-char pos map)))
 
 (defn size [map]
   [(-> map first count) (-> map count)])

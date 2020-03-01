@@ -27,17 +27,18 @@
 (defn dialog []
   (let [node (r/subscribe [:dialog/node])]
     (fn []
-      [:div.eight.wide.column "Dialog"
-       [history-log]
-       [:ul
-        (for [{:keys [node/phrase] :as choice}
-              (d/choices @node)]
-          ^{:key choice}
-          [:li
-           [:a
-            {:href     "#"
-             :on-click #(r/dispatch [:dialog/choose choice])}
-            phrase]])]])))
+      (when (some? @node)
+        [:div.eight.wide.column "Dialog"
+         [history-log]
+         [:ul
+          (for [{:keys [node/phrase] :as choice}
+                (d/choices @node)]
+            ^{:key choice}
+            [:li
+             [:a
+              {:href     "#"
+               :on-click #(r/dispatch [:dialog/choose choice])}
+              phrase]])]]))))
 
 (defn app []
   [:div.ui.grid

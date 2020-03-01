@@ -60,10 +60,11 @@
   [node]
   (if-let [action (:node/action node)]
     (-> node action choices)
-    (map
-      (resolve-ref (:dialog/tree node) node)
-      ;; todo filter choices
-      (:node/choices node))))
+    (->> (:node/choices node)
+         (map (resolve-ref (:dialog/tree node) node))
+         (remove (fn [{:keys [node/visible-if?]}]
+                   (and (some? visible-if?)
+                        (not ((:cond/pred visible-if?)))))))))
 
 ;; :node/action functions
 
@@ -76,54 +77,44 @@
 (def ^:dynamic *collocutor*)
 
 (def dialog-tree
-  {:greeting #:node{
-                    ;; what player says on selecting this option
-                    :phrase      "hello, friend"
-                    ;; declaring how this node (& if) should be shown
-                    :visible-if? #:cond{:desc "you already talked to this person"
-                                        :rule {:fn   r/map->Knows
-                                               :who  :player
-                                               :whom *collocutor*}}
-                    ;; what happens in a world in response
-                    :response    #:response{
-                                            ;; collocutor's phrase
-                                            :say      "hello, do i know you?"
-                                            ;; insert new fact in a system
-                                            :new-fact {}
-                                            ;; make him do something
-                                            :action   [:boss :threaten :bdsm]
-                                            }
-                    ;; list of node's children
-                    ;; has same shape as this node or is keyword reference
-                    :choices     [:yes :no]}
-   :intimidate
-             {:node/phrase "intimidate by boss friendship"
-              ;; :condition means there is more then one outcome to choosing this node
-              ;; it's a map of predicates (possible rule engine queries) to responses
-              :node/cond   {'(r/fears :*collocutor* :boss)
-                            {:response/say "you failed"}
-                            :default
-                            {:response/say "no"}}}
-   :boss     #:node{:phrase  "no boss here"
-                    :choices [:leave]}
-   :weather  #:node{:phrase   "nice weather"
-                    :response #:response{:say "indeed"}
-                    :choices  [#:node{:phrase "back"
-                                      :action back}]}
-   :yes      #:node{:phrase   "yes"
-                    :response #:response{:say "hm, you don't look familiar"}
-                    :choices  [:leave]}
-   :no       #:node{:phrase  "no"
-                    :choices [:leave]}
+  {:greeting  #:node{
+                     ;; what player says on selecting this option
+                     :phrase   "hello, friend"
+                     ;; what happens in a world in response
+                     :response #:response{
+                                          ;; collocutor's phrase
+                                          :say      "hello, do i know you?"
+                                          ;; insert new fact in a system
+                                          :new-fact {}
+                                          ;; make him do something
+                                          :action   [:boss :threaten :bdsm]
+                                          }
+                     ;; list of node's children
+                     ;; has same shape as this node or is keyword reference
+                     :choices  [:yes :no]}
+   :open-door #:node{:phrase      "can you open that door for me?"
+                     ;; declaring how this node (& if) should be shown
+                     :visible-if? #:cond{:desc "you possess key"
+                                         :pred #'r/player-has-key}}
+
+   :weather   #:node{:phrase   "nice weather"
+                     :response #:response{:say "indeed"}
+                     :choices  [#:node{:phrase "back"
+                                       :action back}]}
+   :yes       #:node{:phrase   "yes"
+                     :response #:response{:say "hm, you don't look familiar"}
+                     :choices  [:leave]}
+   :no        #:node{:phrase  "no"
+                     :choices [:leave]}
    :leave
-             #:node{:phrase "leave"
-                    :action leave
-                    }
+              #:node{:phrase "leave"
+                     :action leave
+                     }
    })
 
 (def dialog
   (with-root dialog-tree
-             [:greeting #_:boss :weather :leave]))
+             [:greeting :open-door :weather :leave]))
 
 (comment
 (-> dialog

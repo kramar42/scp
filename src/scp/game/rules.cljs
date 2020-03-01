@@ -4,7 +4,6 @@
   (:require
     [taoensso.timbre :as log]
     [clara.rules :as clara]
-    [clara.tools.inspect :as inspect]
     [mount.core :refer [defstate]]
     [re-frame.core :as rf]))
 
@@ -18,9 +17,10 @@
   "creature can open door if has key"
   [Owns (= who ?who) (= what :key)]
   =>
-  (let [inf (->CanOpen ?who :door)]
-    (clara/insert! inf)
-    (rf/dispatch [:event/insert [inf]])))
+  (let [fact (->CanOpen ?who :door)]
+    (clara/insert! fact)
+    ;; todo think about better way to introspect session
+    (rf/dispatch [:event/insert fact])))
 
 (defquery get-who-can-open-doors
   []
@@ -32,19 +32,25 @@
    (= ?who who)
    (= ?who ?creature)])
 
+(defquery knows
+  [:?who :?whom]
+  [?whom <- Knows
+   (= ?who who)
+   (= ?whom whom)])
+
 (defsession session- 'scp.game.rules)
 
 (defstate session :start (atom session-))
 
-(defn insert [& facts]
+(defn insert-all! [facts]
   (swap! @session
          #(-> %
               (clara/insert-all facts)
-              (clara/fire-rules)))
-  (rf/dispatch [:event/insert facts]))
+              (clara/fire-rules))))
 
-(defn query [query-fn]
-  (clara/query @@session query-fn))
+(defn query
+  ([query-fn]
+   (clara/query @@session query-fn)))
 
 (defn retract-all [session fact-seq]
   (apply clara/retract session fact-seq))
@@ -55,17 +61,24 @@
               (retract-all facts)
               (clara/fire-rules))))
 
+(defn player-has-key []
+  (let [creature-set
+        (->> (query get-who-can-open-doors)
+             (map :?who)
+             (into #{}))]
+    (some? (creature-set :player))))
+
 (comment
 
-  (insert (->Owns :player :key))
-  (insert (->Owns :player2 :milk))
-  (retract (->Owns :player :key))
+  (insert-all! [(->Owns :player :key)])
+  (insert-all! [(->Owns :player2 :milk)])
+  (retract [(->Owns :player :key)])
 
   (query get-who-can-open-doors)
 
-  @session
-  (-> @@session
-      inspect/inspect
-      ;:insertions
-      )
+  (clara/query @@session knows :?who :player :?whom :creature)
+  (clara/query @@session knows :?who :player :?whom :himself)
+  (insert-all! [(->Knows :player :himself)])
+
+  (player-has-key)
   )

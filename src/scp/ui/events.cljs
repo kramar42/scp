@@ -4,7 +4,21 @@
     [re-frame.core :as r]
     [scp.ui.display :as d]
     [scp.game.map :as map]
-    [scp.game.rules :as rule]))
+    [scp.game.level :as l]
+    [scp.game.rules :as rules]))
+
+;; effect handlers
+
+(r/reg-fx
+  :facts
+  (fn [facts]
+    (rules/insert-all! (log/spy facts))))
+
+(r/reg-fx
+  :draw
+  (fn [actions]
+    (doseq [[where what] actions]
+      (d/draw where what))))
 
 ;; db events
 
@@ -21,55 +35,63 @@
   :map/move
   (fn [{:keys [db]} [_ who move-fn]]
     (let [old-pos (get-in db [who :position])
-          new-pos (move-fn old-pos)]
-      (when (map/can-stand new-pos (:map db))
-        ;; todo turn into coeffects
-        (d/draw old-pos ".")
-        (d/draw new-pos "@")
-        {:db (update-in db [who :position] move-fn)
+          who-symbol (get-in db [who :symbol])
+          new-pos (move-fn old-pos)
+          people (l/people-at-pos db new-pos)
+          map-tile (map/get-char new-pos (:map db))]
+      (cond
+        (seq people)
+        {:dispatch [:dialog/start people]}
+
+        (map/can-stand new-pos (:map db))
+        {:draw     [[old-pos map-tile]
+                    [new-pos who-symbol]]
+         :db       (update-in db [who :position] move-fn)
          :dispatch [:map/stand who new-pos]}))))
 
 (r/reg-event-fx
   :map/stand
   (fn [{:keys [db]} [_ who pos]]
-    (when-let [pickup-items (->> db
-                                 :items
-                                 (filter (fn [{:keys [position]}]
-                                           (= position pos)))
-                                 ;; todo why?
-                                 seq)]
+    (when-let [pickup-items (l/items-at-pos db pos)]
       {:dispatch [:item/pickup who pickup-items]})))
 
 (r/reg-event-fx
   :item/pickup
-  (fn [_ [_ who items]]
-    ;; todo also remove item from the level
-    {:dispatch-n
-     (vec (for [{:keys [id]} items]
-            [:rule/insert rule/->Owns [who id]]))}))
+  (fn [{:keys [db]} [_ who items]]
+    (let [ids (into #{} (map :id items))]
+      {:dispatch [:fact/insert-all
+                  (mapv #(rules/->Owns who %) ids)]
+       :db       (update db :items
+                         (fn [items]
+                           (remove #(ids (:id %)) items)))})))
 
 ;; rule events
 
 (r/reg-event-fx
-  :rule/insert
-  (fn [_ [_ rule args]]
-    (rule/insert (apply rule args))
-    nil))
+  :fact/insert-all
+  (fn [_ [_ facts]]
+    {:facts facts
+     :dispatch-n (mapv #(vector :event/insert %) facts)}))
 
 (r/reg-event-db
   :event/insert
-  (fn [db [_ events]]
+  (fn [db [_ event]]
     (update-in db [:events]
-               concat events)))
+               conj event)))
 
 ;; dialog events
+
+(r/reg-event-db
+  :dialog/start
+  (fn [db [_ people]]
+    (assoc db :dialog (-> people first :dialog))))
 
 (r/reg-event-db
   :dialog/say
   (fn [db [_ what]]
     (if what
-      (update-in db [:history]
-                 conj what)
+      (update db :history
+              conj what)
       db)))
 
 (r/reg-event-fx
