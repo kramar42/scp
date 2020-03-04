@@ -1,6 +1,6 @@
 (ns scp.ui.events
   (:require
-    [taoensso.timbre :as log]
+    ; [taoensso.timbre :as log]
     [re-frame.core :as r]
     [scp.ui.display :as d]
     [scp.game.map :as map]

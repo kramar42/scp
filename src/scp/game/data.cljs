@@ -4,15 +4,15 @@
     [mount.core :refer [defstate]]))
 
 (def schema
-  {:entity/name {:db/unique :db.unique/identity}
+  {:entity/name  {:db/unique :db.unique/identity}
    
-   :attr/name {}
-   :attr/value {}
-   :attr/entity {:db/type :db.type/ref}
+   :attr/name    {}
+   :attr/value   {}
+   :attr/entity  {:db/type :db.type/ref}
 
-   :rel/name {}
-   :rel/source {:db/type :db.type/ref}
-   :rel/target {:db/type :db.type/ref}
+   :rel/name     {}
+   :rel/source   {:db/type :db.type/ref}
+   :rel/target   {:db/type :db.type/ref}
    :rel/entities {:db/cardinality :db.cardinality/many}})
 
 (defstate conn :start (d/create-conn schema))
@@ -74,8 +74,6 @@
        entity-name))
 
 (comment
-  (entities)
   (attrs :you)
-  @@conn
   (rels :you)
   )

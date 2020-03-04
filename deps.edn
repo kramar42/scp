@@ -4,18 +4,7 @@
            com.cerner/clara-rules {:mvn/version "0.20.0"}
            re-frame               {:mvn/version "0.11.0"}
            datascript             {:mvn/version "0.18.10"}
-           ;org.clojure/core.async {:mvn/version "1.0.567"}
-           ;org.clojure/alpha.spec {:git/url "https://github.com/clojure/spec-alpha2.git"
-           ;                        :sha "8498f9cb352135579b6d3a0a5d15c40e5c2647ce"}
-           ;com.taoensso/tufte                  {:mvn/version "2.1.0-RC4"}
-           ;com.wsscode/pathom                  {:mvn/version "2.2.28"}
-           ;hiccup                              {:mvn/version "1.0.5"}
-           ;org.clojure/core.async              {:mvn/version "0.4.500"}
-           ;org.clojure/data.xml                {:mvn/version "0.0.8"}
-           ;org.clojure/data.csv           {:mvn/version "0.1.4"}
-           ;datascript             {:mvn/version "0.18.4"}
-           ;org.clojure/clojure                 {:mvn/version "1.10.1"}
-           ;bidi                                {:mvn/version "2.1.6"}
+        ;    bidi                   {:mvn/version "2.1.6"}
            }
  :aliases {:dev {:extra-paths ["dev"]
                  :extra-deps  {org.clojure/clojurescript  {:mvn/version "1.10.520"}
@@ -24,7 +13,6 @@
                                day8.re-frame/re-frame-10x {:mvn/version "0.5.2"}
                                aysylu/loom                {:mvn/version "1.0.2"}
                                com.taoensso/tufte         {:mvn/version "2.1.0"}
-                               ;reagent                     {:mvn/version "0.8.1"}
-                               ;expound                     {:mvn/version "0.7.2"}
-                               ;org.clojure/tools.namespace {:mvn/version "0.3.1"}
+                            ;    reagent                    {:mvn/version "0.8.1"}
+                            ;    expound                    {:mvn/version "0.7.2"}
                                }}}}

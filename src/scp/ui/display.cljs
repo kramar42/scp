@@ -5,7 +5,7 @@
     [scp.game.map :as m]))
 
 
-(defn new-display [& params]
+(defn new-display []
   (new rot/Display
        (clj->js {:width 50 :height 50
                  :forceSquareRatio false})))
@@ -34,12 +34,6 @@
   (doseq [{:keys [position symbol]} people]
     (draw position symbol)))
 
-(comment
-  (draw 1 1 "#")
-  (get-map :2)
-  (draw-level @scp.core/app)
-  )
-
 (defn display-option
   ([name]
    (-> @display
@@ -49,14 +43,14 @@
 
 (comment
   (def m (-> (new rot/Map.Digger 50 50)
-             (.create (.-DEBUG (:display @db)))
+             (.create (.-DEBUG @display))
              #_(js->clj :keywordize-keys true)))
 
   (def d (.create m))
 
   (-> d (.getCorridors))
 
-  (rot/SHOW (.getContainer (:display @b)))
+  (rot/SHOW (.getContainer @display))
 
-  (.create m (.-DEBUG (:display @db)))
+  (.create m (.-DEBUG @display))
   )

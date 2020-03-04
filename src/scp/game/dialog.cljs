@@ -1,6 +1,6 @@
 (ns scp.game.dialog
   (:require
-    [taoensso.timbre :as log]
+    ; [taoensso.timbre :as log]
     [cljs.spec.alpha :as s]
     [scp.game.rules :as r]))
 
@@ -45,8 +45,9 @@
      (assoc node :dialog/tree tree
                  :dialog/parent parent))))
 
-(defn root [tree]
+(defn root
   ":dialog/root is special id for starting conversation"
+  [tree]
   (resolve-ref tree tree :dialog/root))
 
 (defn with-root
@@ -77,7 +78,7 @@
 (def ^:dynamic *collocutor*)
 
 (def dialog-tree
-  {:soldier1/greeting #:node{
+  {:greeting #:node{
                      ;; what player says on selecting this option
                      :phrase   "hello, friend"
                      ;:cond   {'(r/fears :*collocutor* :boss)
@@ -141,6 +142,7 @@
 
 (defn trigger-fn
   [target action symbol]
+  (println target action symbol)
   #_=> #_response)
 
 (def actions

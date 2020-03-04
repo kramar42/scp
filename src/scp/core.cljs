@@ -1,16 +1,17 @@
 (ns scp.core
   (:require
-    [taoensso.timbre :as log]
-    [reagent.core :as r]
-    [re-frame.core :as re]
-    [scp.ui.events]
-    [scp.ui.keyboard :as k]
-    [scp.ui.display :as d]
-    [scp.game.dialog :as dl]
-    [scp.game.map :as m]
-    [scp.game.level :as l]
-    [scp.ui.dom :as u]
-    [scp.ui.views :as v]))
+   [taoensso.timbre :as log]
+   [reagent.core :as r]
+   [re-frame.core :as re]
+   [scp.ui.events]
+   [scp.ui.keyboard :as k]
+   [scp.ui.display :as d]
+   [scp.game.dialog :as dl]
+   [scp.game.map :as m]
+   [scp.game.level :as l]
+   [scp.game.data]
+   [scp.ui.dom :as u]
+   [scp.ui.views :as v]))
 
 (enable-console-print!)
 
@@ -20,7 +21,6 @@
 (defn refresh []
   (re/dispatch-sync [:db/init app])
   (k/shortcuts)
-  #_(v/run-history-chan)
   (log/info "render")
   (d/draw-level app)
   (r/render v/app u/root-element)

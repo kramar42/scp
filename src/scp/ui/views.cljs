@@ -1,8 +1,7 @@
 (ns scp.ui.views
   (:require
-   [taoensso.timbre :as log]
+  ;  [taoensso.timbre :as log]
    [re-frame.core :as r]
-   [reagent.core :refer [atom]]
    [scp.ui.subscriptions]
    [scp.game.dialog :as d]
    [scp.game.data :as data]))
