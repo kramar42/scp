@@ -77,9 +77,13 @@
 (def ^:dynamic *collocutor*)
 
 (def dialog-tree
-  {:greeting  #:node{
+  {:soldier1/greeting #:node{
                      ;; what player says on selecting this option
                      :phrase   "hello, friend"
+                     ;:cond   {'(r/fears :*collocutor* :boss)
+                     ;         {:response/say "you failed"}
+                     ;         :default
+                     ;         {:response/say "no"}}
                      ;; what happens in a world in response
                      :response #:response{
                                           ;; collocutor's phrase

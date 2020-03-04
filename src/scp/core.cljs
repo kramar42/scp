@@ -9,7 +9,7 @@
     [scp.game.dialog :as dl]
     [scp.game.map :as m]
     [scp.game.level :as l]
-    [scp.ui.util :as u]
+    [scp.ui.dom :as u]
     [scp.ui.views :as v]))
 
 (enable-console-print!)

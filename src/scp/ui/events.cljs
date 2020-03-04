@@ -26,8 +26,9 @@
   :db/init
   (fn [_ [_ data]]
     (assoc data
-      :events []
-      :history [])))
+           :events []
+           :history []
+           :data-path [])))
 
 ;; map events
 
@@ -102,20 +103,12 @@
           [:dialog/say (:response/say response)]]
      :db (assoc db :dialog choice)}))
 
+;; datalog events
 
-;; was used for timeouts / animation
-(comment
-(defstate history-chan :start (a/chan))
-(defn run-history-chan []
-  (go-loop []
-           (->> @history-chan
-                a/<!
-                (swap! @history conj))
-           (recur)))
-(defn say [& msgs]
-  (doseq [msg msgs]
-    (a/put! @history-chan msg)))
-(comment
-  (say "hey")
-)
-)
+(r/reg-event-db
+ :data/path
+ (fn [db [_ path]]
+   (update db :data-path
+           (if (= path :data.path/back)
+             #(if (empty? %) [] (pop %))
+             #(conj % path)))))

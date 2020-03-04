@@ -16,3 +16,8 @@
   :dialog/node
   (fn [db _]
     (:dialog db)))
+
+(r/reg-sub
+ :data/path
+ (fn [db _]
+   (:data-path db)))

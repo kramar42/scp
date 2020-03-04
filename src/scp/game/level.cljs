@@ -1,8 +1,8 @@
 (ns scp.game.level
   (:require
-    [taoensso.timbre :as log]
-    [scp.game.map :as m]
-    [scp.game.dialog :as d]))
+   [taoensso.timbre :as log]
+   [scp.game.map :as m]
+   [scp.game.dialog :as d]))
 
 
 (defn generate [{:keys [map]}]
