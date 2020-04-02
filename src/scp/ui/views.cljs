@@ -57,7 +57,7 @@
                :on-click #(r/dispatch [:data/path entity])}
               entity]])]
          [:div.dossier
-          [:table.ui.celled.table.unstackable
+          [:table.ui.celled.table.unstackable.entities
            [:thead>tr
             [:th "Attr"] [:th "Value"]]
            [:tbody
@@ -65,7 +65,7 @@
               ^{:key id}
               [:tr
                [:td attr] [:td value]])]]
-          [:table.ui.celled.table.unstackable
+          [:table.ui.celled.table.unstackable.relations
            [:thead>tr
             [:th "Relation"] [:th "Target"]]
            [:tbody

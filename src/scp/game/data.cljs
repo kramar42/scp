@@ -17,6 +17,10 @@
 
 (defstate conn :start (d/create-conn schema))
 
+;; todo turn this into reframe subscription
+;; use it as a base for a subs that's showing
+;; all entities & relations known to a player
+;; will be used in make-assumption ui
 (defn entities []
   (d/q '[:find [?name ...]
          :where
@@ -72,6 +76,19 @@
          [?t :entity/name ?target]]
        @@conn
        entity-name))
+
+"""
+
+initially write condition as a predicate
+later introduce data description: [:has-item :create :key], [:knows :who :whom]
+
+for now can only be triggered in dialog directly from response node,
+or when new fact is inserted, or when some item is transfered
+
+how rules are connected to data?
+and how both are connected to conditions & actions?
+
+"""
 
 (comment
   (attrs :you)
