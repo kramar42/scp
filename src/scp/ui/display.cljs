@@ -7,7 +7,7 @@
 
 (defn new-display []
   (new rot/Display
-       (clj->js {:width 50 :height 50
+       (clj->js {:width 50 :height 50 :bg "#282828"
                  :forceSquareRatio false})))
 
 (defstate display :start (new-display))
@@ -29,7 +29,7 @@
     (doseq [[j c] (map-indexed vector r)]
       (draw j i c)))
   (draw (:position player) "@")
-  (doseq [{:keys [position symbol]} items]
+  (doseq [[_ {:keys [position symbol]}] items]
     (draw position symbol))
   (doseq [{:keys [position symbol]} people]
     (draw position symbol)))

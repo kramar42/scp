@@ -21,3 +21,8 @@
  :data/path
  (fn [db _]
    (:data-path db)))
+
+(r/reg-sub
+  :creature/inventory
+  (fn [db [_ creature]]
+    (get-in db [:creatures creature :items])))

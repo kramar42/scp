@@ -1,6 +1,7 @@
 (ns scp.game.map
   (:require
-    [taoensso.timbre :as log]))
+   #_[taoensso.timbre :as log]
+   [clojure.string :as str]))
 
 (def levels
   {:1 "
@@ -36,7 +37,7 @@
 
 (defn get-map [name]
   (let [map-str (levels name)
-        map-lines (clojure.string/split-lines map-str)]
+        map-lines (str/split-lines map-str)]
     (map to-array (rest map-lines))))
 
 (defn get-char [[px py] map]

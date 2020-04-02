@@ -78,27 +78,30 @@
 (def ^:dynamic *collocutor*)
 
 (def dialog-tree
-  {:greeting #:node{
-                     ;; what player says on selecting this option
-                     :phrase   "hello, friend"
-                     ;:cond   {'(r/fears :*collocutor* :boss)
-                     ;         {:response/say "you failed"}
-                     ;         :default
-                     ;         {:response/say "no"}}
-                     ;; what happens in a world in response
-                     :response #:response{
-                                          ;; collocutor's phrase
-                                          :say      "hello, do i know you?"
-                                          ;; insert new fact in a system
-                                          :new-fact {}
-                                          ;; make him do something
-                                          :action   [:boss :threaten :bdsm]
-                                          }
-                     ;; list of node's children
-                     ;; has same shape as this node or is keyword reference
-                     :choices  [:yes :no]}
+  {
+   :greeting #:node{
+                    ;; what player says on selecting this option
+                    :phrase   "hello, friend"
+                    ;:cond   {'(r/fears :*collocutor* :boss)
+                    ;         {:response/say "you failed"}
+                    ;         :default
+                    ;         {:response/say "no"}}
+                    ;; what happens in a world in response
+                    :response #:response{
+                                         ;; collocutor's phrase
+                                         :say      "hello, do i know you?"
+                                         ;; insert new fact in a system
+                                         :new-fact {}
+                                         ;; make him do something
+                                         ;; todo should this be happening through innner-motivation
+                                         ;; and trigger/action subsystem?
+                                         :action   [:boss :threaten :bdsm]}
+                    
+                                    ;; list of node's children
+                                    ;; has same shape as this node or is keyword reference
+                    :choices  [:yes :no]}
    :open-door #:node{:phrase      "can you open that door for me?"
-                     ;; declaring how this node (& if) should be shown
+                                    ;; declaring how this node (& if) should be shown
                      :visible-if? #:cond{:desc "you possess key"
                                          :pred #'r/player-has-key}}
 
@@ -111,44 +114,43 @@
                      :choices  [:leave]}
    :no        #:node{:phrase  "no"
                      :choices [:leave]}
-   :leave
-              #:node{:phrase "leave"
-                     :action leave
-                     }
-   })
+   :leave     #:node{:phrase "leave"
+                     :action leave}})
+   
 
 (def dialog
   (with-root dialog-tree
              [:greeting :open-door :weather :leave]))
 
 (comment
-(-> dialog
-    root
-    choices
-    ;(nth 2)
-    ;:node/phrase
-    ;choices
-    ;back
-    )
-)
+ (-> dialog
+     root
+     choices))
+     ;(nth 2)
+     ;:node/phrase
+     ;choices
+     ;back
+    
+
 
 ;; action & trigger ideas
 (comment
-(def all-symbols
-  [{:id         :akatosh
-    :is-threat? true}])
+  (def all-symbols
+    [{:id         :akatosh
+      :is-threat? true}])
 
-(def can-be-threat? (constantly true))
+  (def can-be-threat? (constantly true))
 
-(defn trigger-fn
-  [target action symbol]
-  (println target action symbol)
-  #_=> #_response)
+  (defn trigger-fn
+    [target action symbol]
+    (println target action symbol)
+    #_=> #_response)
 
-(def actions
-  {:threaten  (->> all-symbols
-                   (filter can-be-threat?)
-                   (map trigger-fn))
-   :ask-about {"by" "analogy"}
-   :give      'something})
-)
+  (def actions
+    {:threaten  (->> all-symbols
+                     (filter can-be-threat?)
+                     (map trigger-fn))
+     :ask-about {"by" "analogy"}
+     :give      'something})
+  
+  )

@@ -13,7 +13,11 @@
    :rel/name     {}
    :rel/source   {:db/type :db.type/ref}
    :rel/target   {:db/type :db.type/ref}
-   :rel/entities {:db/cardinality :db.cardinality/many}})
+   :rel/entities {:db/cardinality :db.cardinality/many}
+
+   :motiv/type   {}
+   :motiv/source {:db/type :db.type/ref}
+   :motiv/target {:db/type :db.type/ref}})
 
 (defstate conn :start (d/create-conn schema))
 
@@ -77,20 +81,44 @@
        @@conn
        entity-name))
 
-"""
+(defn add-motiv
+  [{:keys [type source target]}]
+  (d/transact! @conn
+               [{:entity/name source}
+                {:entity/name target}
+                {:motiv/type type
+                 :motiv/source [:entity/name source]
+                 :motiv/target [:entity/name target]}]))
 
-initially write condition as a predicate
-later introduce data description: [:has-item :create :key], [:knows :who :whom]
+(add-motiv {:type :own
+            :source :he
+            :target :she})
 
-for now can only be triggered in dialog directly from response node,
-or when new fact is inserted, or when some item is transfered
+(defn motivs [entity-name]
+  (d/q '[:find ?type ?target
+         :in $ ?entity-name
+         :where
+         [?e :entity/name ?entity-name]
+         [?m :motiv/source ?e]
+         [?m :motiv/type ?type]
+         [?m :motiv/target ?t]
+         [?t :entity/name ?target]]
+       @@conn
+       entity-name))
 
-how rules are connected to data?
-and how both are connected to conditions & actions?
+(defn motiv->dialog [])
 
-"""
+(defmulti motiv->condition :type)
+
+(defmethod motiv->condition
+  :own
+  [{:keys [source target]}]
+  (let [inv @(re-frame.core/subscribe :creature/inventory source)]
+    (-> inv target some?)))
 
 (comment
+  @@conn
   (attrs :you)
   (rels :you)
+  (motivs :he)
   )

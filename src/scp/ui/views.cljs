@@ -1,10 +1,12 @@
 (ns scp.ui.views
   (:require
-  ;  [taoensso.timbre :as log]
-   [re-frame.core :as r]
-   [scp.ui.subscriptions]
-   [scp.game.dialog :as d]
-   [scp.game.data :as data]))
+    ;  [taoensso.timbre :as log]
+    [re-frame.core :as r]
+    [scp.ui.subscriptions]
+    [scp.game.dialog :as d]
+    [scp.game.data :as data]
+    [garden.core :as garden]
+    [scp.ui.css :as css]))
 
 (defn mapi [coll]
   (map vector (range) coll))
@@ -76,13 +78,26 @@
                [:td>a
                 {:href "#"
                  :on-click #(r/dispatch [:data/path target])}
+                target]])]]
+          [:table.ui.celled.table.unstackable.motivs
+           [:thead>tr
+            [:th] [:th "Verb"] [:th "Target"]]
+           [:tbody
+            (for [[id [verb target]] (mapi (data/motivs (last @path)))]
+              ^{:key id}
+              [:tr
+               [:td "Wants to"]
+               [:td verb]
+               [:td>a
+                {:href     "#"
+                 :on-click #(r/dispatch [:data/path target])}
                 target]])]]])
         [:a {:href "#"
              :on-click #(r/dispatch [:data/path :data.path/back])}
          "back"]]))
 
 (defn app []
-  [:div.ui.grid
+  [:div.ui.grid {:style (garden/css css/root)}
    [:div#map.sixteen.wide.column]
    [eventlog]
    [dialog]

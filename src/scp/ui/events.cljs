@@ -38,11 +38,11 @@
     (let [old-pos (get-in db [who :position])
           who-symbol (get-in db [who :symbol])
           new-pos (move-fn old-pos)
-          people (l/people-at-pos db new-pos)
+          creatures (l/creatures-at-pos db new-pos)
           map-tile (map/get-char new-pos (:map db))]
       (cond
-        (seq people)
-        {:dispatch [:dialog/start people]}
+        (seq creatures)
+        {:dispatch [:dialog/start creatures]}
 
         (map/can-stand new-pos (:map db))
         {:draw     [[old-pos map-tile]
@@ -56,15 +56,29 @@
     (when-let [pickup-items (l/items-at-pos db pos)]
       {:dispatch [:item/pickup who pickup-items]})))
 
+(defn rm-items-fn [ids]
+  (fn [m] (apply dissoc m ids)))
+
+(defn add-items-fn [items]
+  (fn [m] (merge m items)))
+
 (r/reg-event-fx
   :item/pickup
   (fn [{:keys [db]} [_ who items]]
-    (let [ids (into #{} (map :id items))]
+    (let [ids (keys items)]
       {:dispatch [:fact/insert-all
                   (mapv #(rules/->Owns who %) ids)]
-       :db       (update db :items
-                         (fn [items]
-                           (remove #(ids (:id %)) items)))})))
+       :db       (-> db
+                     (update :items (rm-items-fn ids))
+                     (update-in [:player :items] (add-items-fn items)))})))
+
+(r/reg-event-fx
+ :item/transfer
+ (fn [{:keys [db]} [_ from to items]]
+   (let [ids (keys items)]
+     {:db (-> db
+              (update-in [from :items] (rm-items-fn ids))
+              (update-in [to :items] (add-items-fn items)))})))
 
 ;; rule events
 
@@ -84,8 +98,8 @@
 
 (r/reg-event-db
   :dialog/start
-  (fn [db [_ people]]
-    (assoc db :dialog (-> people first :dialog))))
+  (fn [db [_ creatures]]
+    (assoc db :dialog (-> creatures first :dialog))))
 
 (r/reg-event-db
   :dialog/say

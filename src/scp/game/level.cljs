@@ -10,23 +10,22 @@
   {:map    map
    :player {:symbol "@"
             :position (m/rand-pos map)}
-   :items  [{:symbol "%"
-             :color  "yellow"
-             :id :key
-             :position (m/rand-pos map)}]
-   :people [{:name :soldier
-             :symbol "s"
-             :dialog (d/root d/dialog)
-             :position (m/rand-pos map)}]
+   :items  {:key {:symbol "%"
+                  :color  "yellow"
+                  :position (m/rand-pos map)}}
+   :creatures {:soldier {:symbol "s"
+                         :dialog (d/root d/dialog)
+                         :position (m/rand-pos map)}}
    })
 
 (defn items-at-pos [{:keys [items]} pos]
   (->> items
-       (filter (fn [{:keys [position]}]
+       (filter (fn [[_ {:keys [position]}]]
                  (= position pos)))
-       seq))
+       (map first)
+       (select-keys items)))
 
-(defn people-at-pos [{:keys [people]} pos]
-  (filter (fn [{:keys [position]}]
+(defn creatures-at-pos [{:keys [creatures]} pos]
+  (filter (fn [[_ {:keys [position]}]]
             (= position pos))
-          people))
+          creatures))
