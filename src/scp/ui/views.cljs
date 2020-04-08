@@ -6,23 +6,30 @@
     [scp.game.dialog :as d]
     [scp.game.data :as data]
     [garden.core :as garden]
-    [scp.ui.css :as css]))
+    [scp.ui.css :as css]
+    [taoensso.timbre :as log]))
 
 (defn mapi [coll]
   (map vector (range) coll))
 
 (defn eventlog []
-  (let [events (r/subscribe [:events/log])]
+  (let [visible? (r/subscribe [:ui/visible? :events])
+        events (r/subscribe [:ui/data :events])]
     (fn []
-      [:div.eight.wide.column "Events"
-       [:div#events.ui.feed
-        (for [[id event] (mapi @events)]
-          ^{:key id}
-          [:div.event
-           [:div.content {} event]])]])))
+      [:div
+       [:div.ui.toggle.checkbox
+        [:input {:type      "checkbox"
+                 :on-change #(r/dispatch [:ui/toggle :events])}]
+        [:label {:style {:color css/text-color}} "Events"]]
+       (when @visible?
+         [:div#events.ui.feed
+          (for [[id event] (mapi @events)]
+            ^{:key id}
+            [:div.event
+             [:div.content {} event]])])])))
 
 (defn history-log []
-  (let [history (r/subscribe [:history/log])]
+  (let [history (r/subscribe [:ui/data :history])]
     (fn []
       [:div.history
        (for [[id entry] (mapi @history)]
@@ -34,7 +41,7 @@
   (let [node (r/subscribe [:dialog/node])]
     (fn []
       (when (some? @node)
-        [:div.eight.wide.column "Dialog"
+        [:div "Dialog"
          [history-log]
          [:ul
           (for [{:keys [node/phrase] :as choice}
@@ -96,9 +103,13 @@
              :on-click #(r/dispatch [:data/path :data.path/back])}
          "back"]]))
 
+(comment
+  (garden/style css/root))
+
 (defn app []
-  [:div.ui.grid {:style (garden/css css/root)}
+  [:div.ui.grid
+   [:style (log/spy (garden/css css/root))]
    [:div#map.sixteen.wide.column]
    [eventlog]
    [dialog]
-   [datalog]])
+   #_[datalog]])

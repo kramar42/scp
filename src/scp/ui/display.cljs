@@ -21,7 +21,7 @@
 (defn resize [w h]
   (.setOptions @display (clj->js {:width  w :height h})))
 
-(defn draw-level [{:keys [map player items people]}]
+(defn draw-level [{:keys [map player items creatures]}]
   (.clear @display)
   (let [[w h] (m/size map)]
     (resize w h))
@@ -29,9 +29,9 @@
     (doseq [[j c] (map-indexed vector r)]
       (draw j i c)))
   (draw (:position player) "@")
-  (doseq [[_ {:keys [position symbol]}] items]
+  (doseq [{:keys [position symbol]} (vals items)]
     (draw position symbol))
-  (doseq [{:keys [position symbol]} people]
+  (doseq [{:keys [position symbol]} (vals creatures)]
     (draw position symbol)))
 
 (defn display-option

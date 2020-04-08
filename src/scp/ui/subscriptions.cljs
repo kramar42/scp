@@ -3,24 +3,29 @@
     (re-frame.core :as r)))
 
 (r/reg-sub
-  :events/log
-  (fn [db _]
-    (:events db)))
+  :ui/data
+  (fn [db [_ path]]
+    (get-in db [path :data])))
 
 (r/reg-sub
-  :history/log
-  (fn [db _]
-    (:history db)))
+  :ui/visible?
+  (fn [db [_ path]]
+    (not (get-in db [path :visible?]))))
+
+(r/reg-sub
+  :ui/dialog
+  (fn [db [_ path]]
+    (get-in db [path :dialog])))
 
 (r/reg-sub
   :dialog/node
   (fn [db _]
-    (:dialog db)))
+    (:dialog/node db)))
 
 (r/reg-sub
  :data/path
  (fn [db _]
-   (:data-path db)))
+   (:data/path db)))
 
 (r/reg-sub
   :creature/inventory

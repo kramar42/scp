@@ -7,9 +7,8 @@
                       :asset-path       "/js/main"
                       :modules          {:main {:init-fn scp.core/refresh
                                                 :entries [scp.core]}}
-                      :compiler-options {                   ;
-                                         :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
+                      :compiler-options {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
                                          ;; https://github.com/tonsky/datascript/wiki/Tips-&-tricks#externs-and-shadow-cljs
                                          :infer-externs   :auto
                                          :externs         ["datascript/externs.js"]}
-                      :devtools         {:preloads [#_devtools.preload day8.re-frame-10x.preload]}}}}
+                      :devtools         {:preloads [devtools.preload day8.re-frame-10x.preload]}}}}

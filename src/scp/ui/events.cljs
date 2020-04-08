@@ -26,9 +26,12 @@
   :db/init
   (fn [_ [_ data]]
     (assoc data
-           :events []
-           :history []
-           :data-path [])))
+           :events {:data []
+                    :visible? true}
+           :history {:data []
+                     :visibly? false}
+           :data/path []
+           )))
 
 ;; map events
 
@@ -91,7 +94,7 @@
 (r/reg-event-db
   :event/insert
   (fn [db [_ event]]
-    (update-in db [:events]
+    (update-in db [:events :data]
                conj event)))
 
 ;; dialog events
@@ -99,7 +102,7 @@
 (r/reg-event-db
   :dialog/start
   (fn [db [_ creatures]]
-    (assoc db :dialog (-> creatures first :dialog))))
+    (assoc db :dialog/node (-> creatures first :dialog))))
 
 (r/reg-event-db
   :dialog/say
@@ -122,7 +125,18 @@
 (r/reg-event-db
  :data/path
  (fn [db [_ path]]
-   (update db :data-path
+   (update db :data/path
            (if (= path :data.path/back)
              #(if (empty? %) [] (pop %))
              #(conj % path)))))
+
+#_(r/reg-event-db
+  :ui/data
+  (fn [db [_ path]]
+    ()))
+
+(r/reg-event-db
+  :ui/toggle
+  (fn [db [_ path]]
+    (update-in db [path :visible?]
+               not)))
